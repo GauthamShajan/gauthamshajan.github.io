@@ -1,25 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="">
     <head>
         <meta charset="utf-8">
-        <!-- CRITICAL FIX: Viewport tag ensures responsive mobile rendering on GitHub Pages -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Gautham Shajan — Full-Stack Developer & Brand Designer</title>
-
         <style>
-            *, ::before, ::after {
-                box-sizing: border-box;
-            }
-
-            html, body {
-                width: 100%;
-                min-height: 100%;
-                margin: 0;
-                padding: 0;
-                overflow-x: hidden;
-            }
-
             .error-boundary {
                 border: 2px dashed rgba(255, 0, 0, 0.3);
                 position: relative;
@@ -36,56 +20,144 @@
                 border-radius: 0 0 0 4px;
                 pointer-events: none;
             }
+            .loading-spinner {
+                @apply flex items-center justify-center;
+                @apply min-h-[200px];
+                @apply bg-gradient-to-br from-white/5 to-white/10;
+                @apply rounded-xl;
+                @apply backdrop-blur-sm;
+            }
+            .loading-spinner::after {
+                content: '';
+                @apply w-12 h-12;
+                @apply border-4 border-primary/20;
+                @apply border-t-primary;
+                @apply rounded-full;
+                @apply animate-spin;
+                @apply shadow-lg;
+            }
 
+            /* Base text and background colors for all elements */
             body {
                 @apply bg-background text-foreground;
             }
 
+            /* Form elements styling */
             input, textarea, select {
                 @apply bg-background text-foreground border-input;
                 @apply placeholder:text-muted-foreground;
                 @apply focus:outline-none focus:ring-2 focus:ring-ring;
             }
 
+            /* Handle filled state */
             input:not(:placeholder-shown),
             textarea:not(:placeholder-shown),
             select:not(:placeholder-shown) {
                 @apply bg-background;
             }
 
+            /* Ensure proper contrast in both modes */
             .dark input, .dark textarea, .dark select {
                 @apply bg-background/95;
             }
 
+            input, textarea, select {
+                @apply bg-background/95;
+            }
+
+            /* Handle disabled state */
             input:disabled,
             textarea:disabled,
             select:disabled {
                 @apply opacity-50 cursor-not-allowed;
             }
 
+            /* Button styling */
             button {
                 @apply bg-primary text-primary-foreground hover:bg-primary/90;
                 @apply disabled:opacity-50 disabled:cursor-not-allowed;
                 @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
             }
 
+            /* Secondary button variant */
             button.secondary {
                 @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
             }
 
+            /* Card styling */
             .card {
                 @apply bg-card text-card-foreground;
                 @apply border border-border;
                 @apply rounded-lg shadow-sm;
             }
 
+            /* Popover and dropdown styling */
+            .popover {
+                @apply bg-popover text-popover-foreground;
+                @apply border border-border;
+                @apply shadow-md rounded-md;
+            }
+
+            /* Link styling */
             a {
                 @apply text-primary hover:text-primary/80;
                 @apply focus:outline-none focus:ring-2 focus:ring-ring;
             }
+
+            /* Muted text */
+            .text-muted {
+                @apply text-muted-foreground;
+            }
+
+            /* Accent backgrounds */
+            .bg-accent {
+                @apply bg-accent text-accent-foreground;
+            }
+
+            /* Destructive elements */
+            .destructive {
+                @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+            }
+
+            /* Code blocks and pre elements */
+            pre, code {
+                @apply bg-muted text-muted-foreground;
+                @apply rounded px-[0.3em] py-[0.2em];
+            }
+
+            /* Table styling */
+            table {
+                @apply border-collapse w-full;
+            }
+
+            th, td {
+                @apply border border-border;
+                @apply p-2 text-left;
+            }
+
+            th {
+                @apply bg-muted font-semibold;
+            }
+
+            /* Badge/tag styling */
+            .badge {
+                @apply inline-flex items-center rounded-full;
+                @apply px-2.5 py-0.5 text-xs font-semibold;
+                @apply bg-primary/10 text-primary-foreground;
+            }
+
+            /* Focus outline for accessibility */
+            :focus-visible {
+                @apply outline-none ring-2 ring-ring ring-offset-2;
+            }
+
+            /* Selection styling */
+            ::selection {
+                @apply bg-primary/20 text-foreground;
+            }
         </style>
 
-        <!-- Dynamic Theme Tokens -->
+        <!-- Styles -->
         <style>
             :root {
                 --background: 0 0% 100%;
@@ -131,8 +203,6 @@
                 --ring: 212.7 26.8% 83.9%;
             }
         </style>
-
-        <!-- Tailwind CSS CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
@@ -140,7 +210,7 @@
                 theme: {
                     container: {
                         center: true,
-                        padding: "1rem",
+                        padding: "2rem",
                         screens: {
                             "2xl": "1400px",
                         },
@@ -191,11 +261,2267 @@
             }
         </script>
 
-        <!-- React 18 CDN -->
+        <!-- Load React only -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+        <script>
+            // Ensure React and ReactDOM are globally available
+            if (!window.React || !window.ReactDOM) {
+               throw new Error('React or ReactDOM not loaded');
+            }
+
+            window.React = React;
+            window.ReactDOM = ReactDOM;
+            window.createPortal = ReactDOM.createPortal;
+        </script>
     </head>
-    <body class="bg-[#07090e] text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-black min-h-screen overflow-x-hidden">
+    <body class="bg-background text-foreground">
         <div id="root"></div>
+        <script>
+            var App = (() => {
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __defProps = Object.defineProperties;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
+      }
+    return a;
+  };
+  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+  var __objRest = (source, exclude) => {
+    var target = {};
+    for (var prop in source)
+      if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+        target[prop] = source[prop];
+    if (source != null && __getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(source)) {
+        if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+          target[prop] = source[prop];
+      }
+    return target;
+  };
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+  // react-globals:react
+  var require_react = __commonJS({
+    "react-globals:react"(exports, module) {
+      module.exports = window.React;
+    }
+  });
+
+  // <stdin>
+  var stdin_exports = {};
+  __export(stdin_exports, {
+    default: () => App
+  });
+  var import_react3 = __toESM(require_react());
+
+  // node_modules/lucide-react/dist/esm/createLucideIcon.js
+  var import_react2 = __toESM(require_react());
+
+  // node_modules/lucide-react/dist/esm/shared/src/utils.js
+  var toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+  var toCamelCase = (string) => string.replace(
+    /^([A-Z])|[\s-_]+(\w)/g,
+    (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
+  );
+  var toPascalCase = (string) => {
+    const camelCase = toCamelCase(string);
+    return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
+  };
+  var mergeClasses = (...classes) => classes.filter((className, index, array) => {
+    return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
+  }).join(" ").trim();
+  var hasA11yProp = (props) => {
+    for (const prop in props) {
+      if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
+        return true;
+      }
+    }
+  };
+
+  // node_modules/lucide-react/dist/esm/Icon.js
+  var import_react = __toESM(require_react());
+
+  // node_modules/lucide-react/dist/esm/defaultAttributes.js
+  var defaultAttributes = {
+    xmlns: "http://www.w3.org/2000/svg",
+    width: 24,
+    height: 24,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  };
+
+  // node_modules/lucide-react/dist/esm/Icon.js
+  var Icon = (0, import_react.forwardRef)(
+    (_a, ref) => {
+      var _b = _a, {
+        color = "currentColor",
+        size = 24,
+        strokeWidth = 2,
+        absoluteStrokeWidth,
+        className = "",
+        children,
+        iconNode
+      } = _b, rest = __objRest(_b, [
+        "color",
+        "size",
+        "strokeWidth",
+        "absoluteStrokeWidth",
+        "className",
+        "children",
+        "iconNode"
+      ]);
+      return (0, import_react.createElement)(
+        "svg",
+        __spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          ref
+        }, defaultAttributes), {
+          width: size,
+          height: size,
+          stroke: color,
+          strokeWidth: absoluteStrokeWidth ? Number(strokeWidth) * 24 / Number(size) : strokeWidth,
+          className: mergeClasses("lucide", className)
+        }), !children && !hasA11yProp(rest) && { "aria-hidden": "true" }), rest),
+        [
+          ...iconNode.map(([tag, attrs]) => (0, import_react.createElement)(tag, attrs)),
+          ...Array.isArray(children) ? children : [children]
+        ]
+      );
+    }
+  );
+
+  // node_modules/lucide-react/dist/esm/createLucideIcon.js
+  var createLucideIcon = (iconName, iconNode) => {
+    const Component = (0, import_react2.forwardRef)(
+      (_a, ref) => {
+        var _b = _a, { className } = _b, props = __objRest(_b, ["className"]);
+        return (0, import_react2.createElement)(Icon, __spreadValues({
+          ref,
+          iconNode,
+          className: mergeClasses(
+            `lucide-${toKebabCase(toPascalCase(iconName))}`,
+            `lucide-${iconName}`,
+            className
+          )
+        }, props));
+      }
+    );
+    Component.displayName = toPascalCase(iconName);
+    return Component;
+  };
+
+  // node_modules/lucide-react/dist/esm/icons/arrow-right.js
+  var __iconNode = [
+    ["path", { d: "M5 12h14", key: "1ays0h" }],
+    ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
+  ];
+  var ArrowRight = createLucideIcon("arrow-right", __iconNode);
+
+  // node_modules/lucide-react/dist/esm/icons/check.js
+  var __iconNode2 = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+  var Check = createLucideIcon("check", __iconNode2);
+
+  // node_modules/lucide-react/dist/esm/icons/circle-check.js
+  var __iconNode3 = [
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+    ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+  ];
+  var CircleCheck = createLucideIcon("circle-check", __iconNode3);
+
+  // node_modules/lucide-react/dist/esm/icons/code-xml.js
+  var __iconNode4 = [
+    ["path", { d: "m18 16 4-4-4-4", key: "1inbqp" }],
+    ["path", { d: "m6 8-4 4 4 4", key: "15zrgr" }],
+    ["path", { d: "m14.5 4-5 16", key: "e7oirm" }]
+  ];
+  var CodeXml = createLucideIcon("code-xml", __iconNode4);
+
+  // node_modules/lucide-react/dist/esm/icons/copy.js
+  var __iconNode5 = [
+    ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
+    ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
+  ];
+  var Copy = createLucideIcon("copy", __iconNode5);
+
+  // node_modules/lucide-react/dist/esm/icons/cpu.js
+  var __iconNode6 = [
+    ["path", { d: "M12 20v2", key: "1lh1kg" }],
+    ["path", { d: "M12 2v2", key: "tus03m" }],
+    ["path", { d: "M17 20v2", key: "1rnc9c" }],
+    ["path", { d: "M17 2v2", key: "11trls" }],
+    ["path", { d: "M2 12h2", key: "1t8f8n" }],
+    ["path", { d: "M2 17h2", key: "7oei6x" }],
+    ["path", { d: "M2 7h2", key: "asdhe0" }],
+    ["path", { d: "M20 12h2", key: "1q8mjw" }],
+    ["path", { d: "M20 17h2", key: "1fpfkl" }],
+    ["path", { d: "M20 7h2", key: "1o8tra" }],
+    ["path", { d: "M7 20v2", key: "4gnj0m" }],
+    ["path", { d: "M7 2v2", key: "1i4yhu" }],
+    ["rect", { x: "4", y: "4", width: "16", height: "16", rx: "2", key: "1vbyd7" }],
+    ["rect", { x: "8", y: "8", width: "8", height: "8", rx: "1", key: "z9xiuo" }]
+  ];
+  var Cpu = createLucideIcon("cpu", __iconNode6);
+
+  // node_modules/lucide-react/dist/esm/icons/external-link.js
+  var __iconNode7 = [
+    ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
+    ["path", { d: "M10 14 21 3", key: "gplh6r" }],
+    ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
+  ];
+  var ExternalLink = createLucideIcon("external-link", __iconNode7);
+
+  // node_modules/lucide-react/dist/esm/icons/eye.js
+  var __iconNode8 = [
+    [
+      "path",
+      {
+        d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+        key: "1nclc0"
+      }
+    ],
+    ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+  ];
+  var Eye = createLucideIcon("eye", __iconNode8);
+
+  // node_modules/lucide-react/dist/esm/icons/layers.js
+  var __iconNode9 = [
+    [
+      "path",
+      {
+        d: "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z",
+        key: "zw3jo"
+      }
+    ],
+    [
+      "path",
+      {
+        d: "M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12",
+        key: "1wduqc"
+      }
+    ],
+    [
+      "path",
+      {
+        d: "M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17",
+        key: "kqbvx6"
+      }
+    ]
+  ];
+  var Layers = createLucideIcon("layers", __iconNode9);
+
+  // node_modules/lucide-react/dist/esm/icons/palette.js
+  var __iconNode10 = [
+    [
+      "path",
+      {
+        d: "M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z",
+        key: "e79jfc"
+      }
+    ],
+    ["circle", { cx: "13.5", cy: "6.5", r: ".5", fill: "currentColor", key: "1okk4w" }],
+    ["circle", { cx: "17.5", cy: "10.5", r: ".5", fill: "currentColor", key: "f64h9f" }],
+    ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
+    ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
+  ];
+  var Palette = createLucideIcon("palette", __iconNode10);
+
+  // node_modules/lucide-react/dist/esm/icons/panels-top-left.js
+  var __iconNode11 = [
+    ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
+    ["path", { d: "M3 9h18", key: "1pudct" }],
+    ["path", { d: "M9 21V9", key: "1oto5p" }]
+  ];
+  var PanelsTopLeft = createLucideIcon("panels-top-left", __iconNode11);
+
+  // node_modules/lucide-react/dist/esm/icons/send.js
+  var __iconNode12 = [
+    [
+      "path",
+      {
+        d: "M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",
+        key: "1ffxy3"
+      }
+    ],
+    ["path", { d: "m21.854 2.147-10.94 10.939", key: "12cjpa" }]
+  ];
+  var Send = createLucideIcon("send", __iconNode12);
+
+  // node_modules/lucide-react/dist/esm/icons/sparkles.js
+  var __iconNode13 = [
+    [
+      "path",
+      {
+        d: "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
+        key: "4pj2yx"
+      }
+    ],
+    ["path", { d: "M20 3v4", key: "1olli1" }],
+    ["path", { d: "M22 5h-4", key: "1gvqau" }],
+    ["path", { d: "M4 17v2", key: "vumght" }],
+    ["path", { d: "M5 18H3", key: "zchphs" }]
+  ];
+  var Sparkles = createLucideIcon("sparkles", __iconNode13);
+
+  // node_modules/lucide-react/dist/esm/icons/terminal.js
+  var __iconNode14 = [
+    ["path", { d: "M12 19h8", key: "baeox8" }],
+    ["path", { d: "m4 17 6-6-6-6", key: "1yngyt" }]
+  ];
+  var Terminal = createLucideIcon("terminal", __iconNode14);
+
+  // node_modules/lucide-react/dist/esm/icons/x.js
+  var __iconNode15 = [
+    ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+    ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+  ];
+  var X = createLucideIcon("x", __iconNode15);
+
+  // <stdin>
+  var SPLINE_SCENE_URL = "https://prod.spline.design/oHnPfrlO3kDJwXJg/scene.splinecode";
+  var FixedSplineBackground = (0, import_react3.memo)(() => {
+    const containerRef = (0, import_react3.useRef)(null);
+    const [loaded, setLoaded] = (0, import_react3.useState)(false);
+    (0, import_react3.useEffect)(() => {
+      let isMounted = true;
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/@splinetool/viewer@1.9.18/build/spline-viewer.js";
+      script.type = "module";
+      script.async = true;
+      script.onload = () => {
+        if (!isMounted)
+          return;
+        setLoaded(true);
+      };
+      script.onerror = () => {
+        console.warn("Spline runtime failed to load; using ambient fallback glow.");
+        if (isMounted)
+          setLoaded(true);
+      };
+      document.head.appendChild(script);
+      const timer = setTimeout(() => {
+        if (isMounted)
+          setLoaded(true);
+      }, 1200);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+        if (document.head.contains(script)) {
+          document.head.removeChild(script);
+        }
+      };
+    }, []);
+    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "fixed inset-0 z-0 overflow-hidden flex items-center justify-center pointer-events-none md:pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        className: `absolute w-[300px] sm:w-[700px] h-[300px] sm:h-[700px] bg-cyan-500/20 rounded-full blur-[100px] sm:blur-[140px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ease-out ${loaded ? "scale-100 opacity-100" : "scale-50 opacity-0"}`
+      }
+    ), /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        className: `absolute w-[250px] sm:w-[600px] h-[250px] sm:h-[600px] bg-indigo-500/20 rounded-full blur-[110px] sm:blur-[150px] top-1/3 left-1/2 -translate-x-1/2 transition-all duration-1000 delay-200 ease-out ${loaded ? "scale-100 opacity-100" : "scale-50 opacity-0"}`
+      }
+    ), /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        ref: containerRef,
+        className: `w-full h-full transition-all duration-1000 ease-out ${loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`
+      },
+      /* @__PURE__ */ import_react3.default.createElement(
+        "spline-viewer",
+        {
+          url: SPLINE_SCENE_URL,
+          style: { width: "100%", height: "100%", display: "block" }
+        }
+      )
+    ));
+  });
+  function App() {
+    const [activeTab, setActiveTab] = (0, import_react3.useState)("all");
+    const [selectedDesignProject, setSelectedDesignProject] = (0, import_react3.useState)(null);
+    const [selectedCodeProject, setSelectedCodeProject] = (0, import_react3.useState)(null);
+    const [copiedColor, setCopiedColor] = (0, import_react3.useState)(null);
+    const [mobileMenuOpen, setMobileMenuOpen] = (0, import_react3.useState)(false);
+    const [formSubmitted, setFormSubmitted] = (0, import_react3.useState)(false);
+    const [formData, setFormData] = (0, import_react3.useState)({ name: "", email: "", projectType: "fullstack", message: "" });
+    const handleCopyColor = (hex) => {
+      try {
+        navigator.clipboard.writeText(hex);
+      } catch (e) {
+        const el = document.createElement("textarea");
+        el.value = hex;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+      setCopiedColor(hex);
+      setTimeout(() => setCopiedColor(null), 2e3);
+    };
+    const projects = (0, import_react3.useMemo)(() => [
+      {
+        id: "brand-identity-apex",
+        type: "design",
+        title: "Aura Dynamics \u2014 Brand Identity & Visual System",
+        category: "Brand & UI/UX Design",
+        shortDesc: "Complete visual identity, logo mark, color system, typography scale, and branded product assets for a high-tech AI startup.",
+        impact: "Elevated brand credibility, resulting in a 180% increase in lead conversion and successful Series A pitch presentation.",
+        thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=75",
+        tags: ["Logo Design", "Visual Identity", "Brand Guidelines", "Asset Creation"],
+        brandDetails: {
+          client: "Aura Dynamics Tech",
+          year: "2025",
+          role: "Lead Brand Identity Designer",
+          overview: "Aura Dynamics needed a powerful, modern, and memorable visual brand identity that communicated cutting-edge innovation while retaining trust and human warmth for enterprise software applications.",
+          logos: [
+            { name: "Primary Dark Logo", type: "dark", bg: "bg-slate-900", text: "text-white", iconColor: "from-cyan-400 to-indigo-500" },
+            { name: "Light Theme Monogram", type: "light", bg: "bg-slate-100", text: "text-slate-900", iconColor: "from-indigo-600 to-cyan-500" },
+            { name: "Icon Mark / Glyph", type: "icon", bg: "bg-slate-950", text: "text-cyan-400", iconColor: "from-emerald-400 to-cyan-500" }
+          ],
+          colors: [
+            { name: "Cyber Cyan", hex: "#06B6D4", usage: "Primary Brand Accent" },
+            { name: "Electric Indigo", hex: "#6366F1", usage: "Gradient & Secondary" },
+            { name: "Obsidian Deep", hex: "#090D16", usage: "Core Dark Background" },
+            { name: "Nebula Purple", hex: "#A855F7", usage: "Highlight & Alerts" },
+            { name: "Muted Slate", hex: "#64748B", usage: "Body Typography" }
+          ],
+          typography: [
+            { name: "Syne Bold", usage: "Headings & Hero Brand Copy", sample: "Empowering Next-Gen AI Software" },
+            { name: "Plus Jakarta Sans", usage: "UI Controls, Body & Subheadings", sample: "Designed for high performance and seamless user experience." },
+            { name: "Fira Code", usage: "Developer Documentation & Monospace Data", sample: "const aura = new AIBrandEngine();" }
+          ],
+          mockups: [
+            { title: "Brand Guidelines Manual", desc: "Comprehensive print & digital guidelines", image: "https://images.unsplash.com/photo-1542744094-3a31216994c5?auto=format&fit=crop&w=600&q=75" },
+            { title: "Stationery & Merchandise", desc: "Business cards and packaging design", image: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=75" },
+            { title: "Social Banners & Ad Templates", desc: "Cohesive multi-platform graphics", image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=600&q=75" }
+          ]
+        }
+      },
+      {
+        id: "fullstack-saas-nexus",
+        type: "code",
+        title: "DevPulse \u2014 Real-Time Telemetry & Monitoring System",
+        category: "Software & Full-Stack",
+        shortDesc: "Enterprise web application for real-time cloud instance metrics, WebSocket live streaming, and automated anomaly alerts.",
+        impact: "Reduced mean time to detection (MTTD) by 45% and handled 10,000+ live telemetry events per second.",
+        thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=75",
+        tags: ["React", "Node.js", "WebSockets", "PostgreSQL", "Tailwind CSS"],
+        demoUrl: "#",
+        githubUrl: "#",
+        architecture: [
+          "React frontend with optimized custom Canvas rendering for live metric charts.",
+          "Node.js & Express backend using WebSockets (Socket.io) for sub-50ms data updates.",
+          "PostgreSQL database optimized with timescale partition indexes."
+        ]
+      },
+      {
+        id: "fullstack-ai-editor",
+        type: "code",
+        title: "ScribeFlow \u2014 Collaborative Markdown & AI Writer",
+        category: "Software & Full-Stack",
+        shortDesc: "A rich collaborative text platform with real-time multiplayer editing, LLM prompt suggestions, and dynamic PDF export.",
+        impact: "Used by over 2,500 active writers with 99.9% uptime across production clusters.",
+        thumbnail: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=75",
+        tags: ["React", "TypeScript", "Tailwind", "Node.js", "OpenAI API"],
+        demoUrl: "#",
+        githubUrl: "#",
+        architecture: [
+          "CRDT operational transformation logic for latency-free multiplayer editing.",
+          "Custom Tailwind CSS design tokens with rich light and dark theme switching.",
+          "Serverless REST endpoint pipeline with streaming AI completion buffers."
+        ]
+      },
+      {
+        id: "brand-identity-fintech",
+        type: "design",
+        title: "Vaultic \u2014 Modern Crypto & Fintech Visual Identity",
+        category: "Brand & UI/UX Design",
+        shortDesc: "Minimalist logo mark, geometric icon glyphs, dark UI design tokens, and promotional deck graphics for a DeFi platform.",
+        impact: "Helped secure over $1.2M in seed capital with a sleek, enterprise-grade brand presence.",
+        thumbnail: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=800&q=75",
+        tags: ["Fintech Design", "3D Asset Rendering", "Logo Design", "Figma"],
+        brandDetails: {
+          client: "Vaultic Protocol",
+          year: "2026",
+          role: "Brand Lead",
+          overview: "Vaultic requested an ultra-clean visual mark that symbolizes security, speed, and modern cryptographic trust without relying on generic blockchain imagery.",
+          logos: [
+            { name: "Dark Theme Vector", type: "dark", bg: "bg-slate-950", text: "text-emerald-400", iconColor: "from-emerald-400 to-teal-500" },
+            { name: "Light Theme Monogram", type: "light", bg: "bg-white", text: "text-slate-900", iconColor: "from-teal-600 to-emerald-500" }
+          ],
+          colors: [
+            { name: "Vault Emerald", hex: "#10B981", usage: "Security Accent" },
+            { name: "Deep Cyber Charcoal", hex: "#0B0F17", usage: "Background Surface" },
+            { name: "Titanium White", hex: "#F8FAFC", usage: "High Contrast Text" }
+          ],
+          typography: [
+            { name: "Space Grotesk", usage: "Brand Title & Numbers", sample: "Vaultic 2.0 Secure DeFi Protocol" },
+            { name: "Inter", usage: "Interface Typography", sample: "Verify transactions with precision." }
+          ],
+          mockups: [
+            { title: "Mobile Wallet UI Kit", desc: "Full custom icon set & interface styling", image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=75" }
+          ]
+        }
+      }
+    ], []);
+    const filteredProjects = (0, import_react3.useMemo)(() => {
+      return projects.filter((p) => {
+        if (activeTab === "all")
+          return true;
+        if (activeTab === "code")
+          return p.type === "code";
+        if (activeTab === "design")
+          return p.type === "design";
+        return true;
+      });
+    }, [projects, activeTab]);
+    const handleFormSubmit = (e) => {
+      e.preventDefault();
+      setFormSubmitted(true);
+      setTimeout(() => {
+        setFormSubmitted(false);
+        setFormData({ name: "", email: "", projectType: "fullstack", message: "" });
+      }, 4e3);
+    };
+    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "relative min-h-screen bg-[#07090e] text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-black overflow-x-hidden" }, /* @__PURE__ */ import_react3.default.createElement(FixedSplineBackground, null), /* @__PURE__ */ import_react3.default.createElement("nav", { className: "sticky top-0 z-40 bg-[#07090e]/85 backdrop-blur-md border-b border-slate-800/80 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between" }, /* @__PURE__ */ import_react3.default.createElement("a", { href: "#", className: "flex items-center gap-3 group" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-500 p-[1.5px] shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform duration-300" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center" }, /* @__PURE__ */ import_react3.default.createElement(Terminal, { className: "w-5 h-5 text-cyan-400" }))), /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("span", { className: "font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent" }, "Gautham Shajan"), /* @__PURE__ */ import_react3.default.createElement("span", { className: "block text-xs font-mono text-cyan-400/90 tracking-wider" }, "DEV & BRAND DESIGNER"))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "hidden md:flex items-center gap-8 text-sm font-medium text-slate-300" }, /* @__PURE__ */ import_react3.default.createElement("a", { href: "#projects", className: "hover:text-cyan-400 transition-colors" }, "Projects"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#services", className: "hover:text-cyan-400 transition-colors" }, "Services"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#skills", className: "hover:text-cyan-400 transition-colors" }, "Skills"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#contact", className: "hover:text-cyan-400 transition-colors" }, "Contact")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "hidden md:flex items-center gap-4" }, /* @__PURE__ */ import_react3.default.createElement(
+      "a",
+      {
+        href: "#contact",
+        className: "px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-sm font-semibold shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-95"
+      },
+      "Work With Me"
+    )), /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setMobileMenuOpen(!mobileMenuOpen),
+        className: "md:hidden p-2 text-slate-400 hover:text-white"
+      },
+      mobileMenuOpen ? /* @__PURE__ */ import_react3.default.createElement(X, { className: "w-6 h-6" }) : /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-1.5" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-6 h-0.5 bg-slate-300" }), /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-6 h-0.5 bg-slate-300" }))
+    )), mobileMenuOpen && /* @__PURE__ */ import_react3.default.createElement("div", { className: "md:hidden px-4 pt-2 pb-6 bg-slate-950/95 border-b border-slate-800 space-y-3" }, /* @__PURE__ */ import_react3.default.createElement("a", { href: "#projects", onClick: () => setMobileMenuOpen(false), className: "block py-2 text-slate-300 hover:text-cyan-400" }, "Projects"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#services", onClick: () => setMobileMenuOpen(false), className: "block py-2 text-slate-300 hover:text-cyan-400" }, "Services"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#skills", onClick: () => setMobileMenuOpen(false), className: "block py-2 text-slate-300 hover:text-cyan-400" }, "Skills"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#contact", onClick: () => setMobileMenuOpen(false), className: "block py-2 text-slate-300 hover:text-cyan-400" }, "Contact"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#contact", onClick: () => setMobileMenuOpen(false), className: "inline-block w-full text-center py-3 rounded-xl bg-cyan-500 text-black font-semibold" }, "Hire Me"))), /* @__PURE__ */ import_react3.default.createElement("section", { className: "relative pt-16 pb-28 md:pt-28 md:pb-40 z-10 pointer-events-none" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/90 border border-slate-800 mb-8 shadow-lg pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "w-2 h-2 rounded-full bg-emerald-400 animate-pulse" }), /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-xs font-mono text-slate-300 tracking-wide uppercase" }, "Available for Contract & Full-Time Roles")), /* @__PURE__ */ import_react3.default.createElement("h1", { className: "text-5xl sm:text-7xl font-extrabold tracking-tight text-white leading-[1.1] mb-6 drop-shadow-md" }, "Gautham Shajan"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent mb-8 drop-shadow" }, "Full-Stack Software Engineer & Technical Consultant"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-base sm:text-xl text-slate-200 leading-relaxed mb-10 max-w-3xl mx-auto font-normal bg-slate-950/90 md:bg-slate-950/70 p-5 rounded-2xl border border-white/10 shadow-2xl pointer-events-auto" }, "Full-stack developer building scalable web apps, real-time architectures, and custom brand identity systems. Freelancing on Upwork and available for high-impact software engineering roles or contract projects."), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex flex-wrap items-center justify-center gap-4 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement(
+      "a",
+      {
+        href: "#contact",
+        className: "px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-xl shadow-cyan-500/25 flex items-center gap-2 group transition-all hover:scale-105"
+      },
+      /* @__PURE__ */ import_react3.default.createElement("span", null, "Hire / Work With Me"),
+      /* @__PURE__ */ import_react3.default.createElement(ArrowRight, { className: "w-4 h-4 group-hover:translate-x-1 transition-transform" })
+    ), /* @__PURE__ */ import_react3.default.createElement(
+      "a",
+      {
+        href: "#projects",
+        className: "px-8 py-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-sm flex items-center gap-2 shadow-xl transition-all"
+      },
+      /* @__PURE__ */ import_react3.default.createElement(CodeXml, { className: "w-4 h-4 text-cyan-400" }),
+      /* @__PURE__ */ import_react3.default.createElement("span", null, "View Portfolio Projects")
+    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "mt-16 pt-8 border-t border-slate-800/80 max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-6 bg-slate-950/80 p-6 rounded-2xl border border-white/5 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-2xl font-bold text-white font-mono" }, "5+ Years"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs text-slate-400" }, "Engineering Experience")), /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-2xl font-bold text-white font-mono" }, "20+ Delivered"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs text-slate-400" }, "Web Apps & Visual Systems")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "col-span-2 sm:col-span-1" }, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-2xl font-bold text-cyan-400 font-mono" }, "Full-Stack + Design"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs text-slate-400" }, "Hybrid Problem Solver"))))), /* @__PURE__ */ import_react3.default.createElement("section", { id: "projects", className: "py-20 relative z-10 border-t border-slate-800 bg-slate-950/80 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6" }, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2 text-cyan-400 text-xs font-mono font-semibold uppercase tracking-widest mb-2" }, /* @__PURE__ */ import_react3.default.createElement(Sparkles, { className: "w-4 h-4" }), /* @__PURE__ */ import_react3.default.createElement("span", null, "Portfolio Case Studies")), /* @__PURE__ */ import_react3.default.createElement("h2", { className: "text-3xl sm:text-4xl font-bold text-white tracking-tight" }, "Featured Work & Engineering")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800" }, /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setActiveTab("all"),
+        className: `px-4 py-2 rounded-lg text-xs font-semibold transition-all ${activeTab === "all" ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-white"}`
+      },
+      "All Projects"
+    ), /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setActiveTab("code"),
+        className: `px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${activeTab === "code" ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-white"}`
+      },
+      /* @__PURE__ */ import_react3.default.createElement(CodeXml, { className: "w-3.5 h-3.5" }),
+      "Software & Full-Stack"
+    ), /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setActiveTab("design"),
+        className: `px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${activeTab === "design" ? "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-md" : "text-slate-400 hover:text-white"}`
+      },
+      /* @__PURE__ */ import_react3.default.createElement(Palette, { className: "w-3.5 h-3.5" }),
+      "Brand & UI/UX Design"
+    ))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-8" }, filteredProjects.map((project) => /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        key: project.id,
+        className: "group relative rounded-2xl bg-slate-900/80 border border-slate-800/90 hover:border-slate-700 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
+      },
+      /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("div", { className: "relative aspect-video w-full overflow-hidden bg-slate-950" }, /* @__PURE__ */ import_react3.default.createElement(
+        "img",
+        {
+          src: project.thumbnail,
+          alt: project.title,
+          loading: "lazy",
+          className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        }
+      ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" }), /* @__PURE__ */ import_react3.default.createElement("div", { className: "absolute top-4 left-4" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: `px-3 py-1 rounded-full text-xs font-semibold border ${project.type === "design" ? "bg-purple-950/90 border-purple-500/30 text-purple-300" : "bg-cyan-950/90 border-cyan-500/30 text-cyan-300"}` }, project.category))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-6" }, /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-xl font-bold text-white group-hover:text-cyan-400 transition-colors mb-2" }, project.title), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-sm text-slate-300 leading-relaxed mb-4" }, project.shortDesc), /* @__PURE__ */ import_react3.default.createElement("div", { className: "mb-6 p-3 rounded-xl bg-slate-950/90 border border-slate-800/80 flex items-start gap-2.5" }, /* @__PURE__ */ import_react3.default.createElement(Sparkles, { className: "w-4 h-4 text-cyan-400 shrink-0 mt-0.5" }), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs text-slate-300" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "font-semibold text-white" }, "Impact: "), project.impact)), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex flex-wrap gap-2 mb-6" }, project.tags.map((tag, idx) => /* @__PURE__ */ import_react3.default.createElement(
+        "span",
+        {
+          key: idx,
+          className: "px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-xs font-mono border border-slate-700/50"
+        },
+        tag
+      ))))),
+      /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-6 pt-0 mt-auto" }, project.type === "design" ? /* @__PURE__ */ import_react3.default.createElement(
+        "button",
+        {
+          onClick: () => setSelectedDesignProject(project),
+          className: "w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all"
+        },
+        /* @__PURE__ */ import_react3.default.createElement(Eye, { className: "w-4 h-4" }),
+        /* @__PURE__ */ import_react3.default.createElement("span", null, "Open Interactive Design Case Study")
+      ) : /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ import_react3.default.createElement(
+        "button",
+        {
+          onClick: () => setSelectedCodeProject(project),
+          className: "flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition-colors border border-slate-700/50"
+        },
+        /* @__PURE__ */ import_react3.default.createElement(Cpu, { className: "w-4 h-4 text-cyan-400" }),
+        /* @__PURE__ */ import_react3.default.createElement("span", null, "Architecture")
+      ), /* @__PURE__ */ import_react3.default.createElement(
+        "a",
+        {
+          href: "#",
+          className: "flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+        },
+        /* @__PURE__ */ import_react3.default.createElement(ExternalLink, { className: "w-4 h-4" }),
+        /* @__PURE__ */ import_react3.default.createElement("span", null, "Live Demo")
+      )))
+    ))))), selectedDesignProject && /* @__PURE__ */ import_react3.default.createElement("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-y-auto bg-black/85 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "relative w-full max-w-5xl bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "sticky top-0 z-20 px-6 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400" }, /* @__PURE__ */ import_react3.default.createElement(Palette, { className: "w-5 h-5" })), /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-base font-bold text-white" }, selectedDesignProject.title), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs text-slate-400" }, selectedDesignProject.brandDetails.client, " \u2022 ", selectedDesignProject.brandDetails.year))), /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setSelectedDesignProject(null),
+        className: "p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+      },
+      /* @__PURE__ */ import_react3.default.createElement(X, { className: "w-5 h-5" })
+    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-6 sm:p-8 overflow-y-auto space-y-12" }, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("h4", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider mb-2" }, "Project Brief & Strategic Role"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-slate-300 text-base leading-relaxed" }, selectedDesignProject.brandDetails.overview)), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react3.default.createElement("h4", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider" }, "Primary Logo & Icon Marks"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, selectedDesignProject.brandDetails.logos.map((logo, idx) => /* @__PURE__ */ import_react3.default.createElement("div", { key: idx, className: `p-6 rounded-2xl ${logo.bg} border border-slate-800 flex flex-col items-center justify-center min-h-[160px] text-center shadow-lg relative group` }, /* @__PURE__ */ import_react3.default.createElement("div", { className: `w-12 h-12 rounded-xl bg-gradient-to-tr ${logo.iconColor} mb-3 flex items-center justify-center shadow-md` }, /* @__PURE__ */ import_react3.default.createElement(Layers, { className: "w-6 h-6 text-slate-950" })), /* @__PURE__ */ import_react3.default.createElement("span", { className: `text-sm font-bold tracking-tight ${logo.text}` }, "AURA"), /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-[10px] text-slate-400 mt-2 font-mono uppercase" }, logo.name))))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ import_react3.default.createElement("h4", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider" }, "Interactive Color Palette"), copiedColor && /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-xs text-emerald-400 flex items-center gap-1 font-mono" }, /* @__PURE__ */ import_react3.default.createElement(Check, { className: "w-3.5 h-3.5" }), " Copied ", copiedColor, " to clipboard!")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3" }, selectedDesignProject.brandDetails.colors.map((color, idx) => /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        key: idx,
+        onClick: () => handleCopyColor(color.hex),
+        className: "p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer group transition-all"
+      },
+      /* @__PURE__ */ import_react3.default.createElement(
+        "div",
+        {
+          className: "w-full h-16 rounded-xl mb-3 border border-white/10 shadow-inner flex items-center justify-center",
+          style: { backgroundColor: color.hex }
+        },
+        /* @__PURE__ */ import_react3.default.createElement(Copy, { className: "w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow" })
+      ),
+      /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs font-bold text-white" }, color.name),
+      /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-[11px] font-mono text-cyan-400" }, color.hex),
+      /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-[10px] text-slate-400 mt-1" }, color.usage)
+    )))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react3.default.createElement("h4", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider" }, "Typography System"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-3" }, selectedDesignProject.brandDetails.typography.map((type, idx) => /* @__PURE__ */ import_react3.default.createElement("div", { key: idx, className: "p-4 rounded-2xl bg-slate-900/90 border border-slate-800" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between mb-1" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-xs font-bold text-white font-mono" }, type.name), /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-[10px] text-slate-400" }, type.usage)), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-base sm:text-lg text-slate-200 font-medium" }, type.sample))))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react3.default.createElement("h4", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider" }, "Visual Assets & Brand Applications"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, selectedDesignProject.brandDetails.mockups.map((mockup, idx) => /* @__PURE__ */ import_react3.default.createElement("div", { key: idx, className: "rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden group" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "aspect-video w-full overflow-hidden bg-slate-950" }, /* @__PURE__ */ import_react3.default.createElement(
+      "img",
+      {
+        src: mockup.image,
+        alt: mockup.title,
+        loading: "lazy",
+        className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      }
+    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-4" }, /* @__PURE__ */ import_react3.default.createElement("h5", { className: "text-xs font-bold text-white" }, mockup.title), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-[11px] text-slate-400 mt-0.5" }, mockup.desc))))))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-4 bg-slate-900 border-t border-slate-800 text-right" }, /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setSelectedDesignProject(null),
+        className: "px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
+      },
+      "Close Case Study"
+    )))), selectedCodeProject && /* @__PURE__ */ import_react3.default.createElement("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "relative w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between mb-6 border-b border-slate-800 pb-4" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ import_react3.default.createElement(CodeXml, { className: "w-6 h-6 text-cyan-400" }), /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-lg font-bold text-white" }, selectedCodeProject.title)), /* @__PURE__ */ import_react3.default.createElement("button", { onClick: () => setSelectedCodeProject(null), className: "text-slate-400 hover:text-white" }, /* @__PURE__ */ import_react3.default.createElement(X, { className: "w-5 h-5" }))), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider mb-3" }, "Architecture & Technical Highlights"), /* @__PURE__ */ import_react3.default.createElement("ul", { className: "space-y-3 mb-8" }, selectedCodeProject.architecture.map((item, idx) => /* @__PURE__ */ import_react3.default.createElement("li", { key: idx, className: "flex items-start gap-3 text-sm text-slate-300 bg-slate-900 p-3 rounded-xl border border-slate-800" }, /* @__PURE__ */ import_react3.default.createElement(CircleCheck, { className: "w-4 h-4 text-emerald-400 shrink-0 mt-0.5" }), /* @__PURE__ */ import_react3.default.createElement("span", null, item)))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex justify-end gap-3" }, /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setSelectedCodeProject(null),
+        className: "px-5 py-2.5 rounded-xl bg-slate-800 text-white text-xs font-semibold"
+      },
+      "Close"
+    )))), /* @__PURE__ */ import_react3.default.createElement("section", { id: "services", className: "py-20 relative z-10 border-t border-slate-800 bg-slate-950/80 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "text-center max-w-2xl mx-auto mb-16" }, /* @__PURE__ */ import_react3.default.createElement("h2", { className: "text-xs font-mono uppercase text-cyan-400 tracking-widest mb-2" }, "Capabilities & Offerings"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-3xl font-bold text-white tracking-tight" }, "How I Can Build Value for Your Business")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-8 rounded-2xl bg-slate-900/90 border border-slate-800/90 hover:border-cyan-500/40 transition-all duration-300 group shadow-xl" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform" }, /* @__PURE__ */ import_react3.default.createElement(PanelsTopLeft, { className: "w-6 h-6" })), /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-xl font-bold text-white mb-3" }, "Full-Stack Web Applications"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-sm text-slate-300 leading-relaxed" }, "End-to-end custom web applications built with React, Node.js, and modern databases. Clean code, scalable architecture, and responsive UX.")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-8 rounded-2xl bg-slate-900/90 border border-slate-800/90 hover:border-purple-500/40 transition-all duration-300 group shadow-xl" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform" }, /* @__PURE__ */ import_react3.default.createElement(Palette, { className: "w-6 h-6" })), /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-xl font-bold text-white mb-3" }, "Logo & Brand Visual Identity"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-sm text-slate-300 leading-relaxed" }, "Distinctive logo marks, color palettes, typography specs, and branded social assets designed to give startups an instant enterprise-grade image.")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-8 rounded-2xl bg-slate-900/90 border border-slate-800/90 hover:border-indigo-500/40 transition-all duration-300 group shadow-xl" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform" }, /* @__PURE__ */ import_react3.default.createElement(Cpu, { className: "w-6 h-6" })), /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-xl font-bold text-white mb-3" }, "API Architecture & Performance"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-sm text-slate-300 leading-relaxed" }, "REST & WebSocket backend services, database schema design, and frontend render optimizations for speed and efficiency."))))), /* @__PURE__ */ import_react3.default.createElement("section", { id: "skills", className: "py-16 relative z-10 border-t border-slate-800 bg-slate-950/90 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-8 items-center" }, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("h2", { className: "text-xs font-mono uppercase text-cyan-400 tracking-wider mb-2" }, "Technical & Creative Toolkit"), /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-3xl font-bold text-white tracking-tight mb-4" }, "Crafting robust code & pixel-perfect designs"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-sm text-slate-300 leading-relaxed" }, "I combine modern JavaScript frameworks with professional design suites to take products from raw concept to high-scale production deployment.")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-2 gap-4" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-4 rounded-xl bg-slate-900 border border-slate-800" }, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs font-mono text-cyan-400 mb-2" }, "DEVELOPMENT"), /* @__PURE__ */ import_react3.default.createElement("ul", { className: "text-xs text-slate-300 space-y-1.5 font-medium" }, /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 React / Next.js"), /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 TypeScript / ES6+"), /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 Node.js & Express"), /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 PostgreSQL / Tailwind"))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-4 rounded-xl bg-slate-900 border border-slate-800" }, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs font-mono text-purple-400 mb-2" }, "BRAND & DESIGN"), /* @__PURE__ */ import_react3.default.createElement("ul", { className: "text-xs text-slate-300 space-y-1.5 font-medium" }, /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 Vector Logo Design"), /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 Visual Identity Systems"), /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 Figma UI/UX Specs"), /* @__PURE__ */ import_react3.default.createElement("li", null, "\u2022 Asset Mockups"))))))), /* @__PURE__ */ import_react3.default.createElement("section", { id: "contact", className: "py-20 relative z-10 border-t border-slate-800 bg-slate-950/95 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "text-center mb-12" }, /* @__PURE__ */ import_react3.default.createElement("h2", { className: "text-3xl font-bold text-white tracking-tight mb-3" }, "Let's Work Together"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-slate-400 text-sm" }, "Have a software engineering role or custom design project in mind? Send a direct message.")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-8 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl" }, formSubmitted ? /* @__PURE__ */ import_react3.default.createElement("div", { className: "py-12 text-center space-y-3" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto" }, /* @__PURE__ */ import_react3.default.createElement(CircleCheck, { className: "w-6 h-6" })), /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-xl font-bold text-white" }, "Message Sent Successfully!"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-xs text-slate-400" }, "Thank you for reaching out. I will get back to you within 24 hours.")) : /* @__PURE__ */ import_react3.default.createElement("form", { onSubmit: handleFormSubmit, className: "space-y-6" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-6" }, /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("label", { className: "block text-xs font-mono text-slate-300 mb-2 uppercase" }, "Your Name"), /* @__PURE__ */ import_react3.default.createElement(
+      "input",
+      {
+        type: "text",
+        required: true,
+        value: formData.name,
+        onChange: (e) => setFormData(__spreadProps(__spreadValues({}, formData), { name: e.target.value })),
+        placeholder: "Jane Doe",
+        className: "w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+      }
+    )), /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("label", { className: "block text-xs font-mono text-slate-300 mb-2 uppercase" }, "Email Address"), /* @__PURE__ */ import_react3.default.createElement(
+      "input",
+      {
+        type: "email",
+        required: true,
+        value: formData.email,
+        onChange: (e) => setFormData(__spreadProps(__spreadValues({}, formData), { email: e.target.value })),
+        placeholder: "jane@company.com",
+        className: "w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+      }
+    ))), /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("label", { className: "block text-xs font-mono text-slate-300 mb-2 uppercase" }, "Project Scope / Engagement"), /* @__PURE__ */ import_react3.default.createElement(
+      "select",
+      {
+        value: formData.projectType,
+        onChange: (e) => setFormData(__spreadProps(__spreadValues({}, formData), { projectType: e.target.value })),
+        className: "w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+      },
+      /* @__PURE__ */ import_react3.default.createElement("option", { value: "fullstack" }, "Full-Stack Web Development"),
+      /* @__PURE__ */ import_react3.default.createElement("option", { value: "brand" }, "Logo & Brand Identity System"),
+      /* @__PURE__ */ import_react3.default.createElement("option", { value: "both" }, "Hybrid (Software + Brand Design)"),
+      /* @__PURE__ */ import_react3.default.createElement("option", { value: "fulltime" }, "Full-Time Engineering Role")
+    )), /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("label", { className: "block text-xs font-mono text-slate-300 mb-2 uppercase" }, "Project Details / Message"), /* @__PURE__ */ import_react3.default.createElement(
+      "textarea",
+      {
+        rows: "4",
+        required: true,
+        value: formData.message,
+        onChange: (e) => setFormData(__spreadProps(__spreadValues({}, formData), { message: e.target.value })),
+        placeholder: "Tell me a bit about your timeline, goals, or role...",
+        className: "w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+      }
+    )), /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        type: "submit",
+        className: "w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
+      },
+      /* @__PURE__ */ import_react3.default.createElement(Send, { className: "w-4 h-4" }),
+      /* @__PURE__ */ import_react3.default.createElement("span", null, "Send Message")
+    ))))), /* @__PURE__ */ import_react3.default.createElement("footer", { className: "py-8 border-t border-slate-900 text-center text-xs text-slate-500 relative z-10 bg-slate-950 pointer-events-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4" }, /* @__PURE__ */ import_react3.default.createElement("p", null, "\xA9 ", (/* @__PURE__ */ new Date()).getFullYear(), " Gautham Shajan. Built with React & Tailwind CSS."), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex gap-6 text-slate-400" }, /* @__PURE__ */ import_react3.default.createElement("a", { href: "#", className: "hover:text-cyan-400 transition-colors" }, "GitHub"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#", className: "hover:text-cyan-400 transition-colors" }, "LinkedIn"), /* @__PURE__ */ import_react3.default.createElement("a", { href: "#", className: "hover:text-cyan-400 transition-colors" }, "Upwork")))));
+  }
+  return __toCommonJS(stdin_exports);
+})();
+/*! Bundled license information:
+
+lucide-react/dist/esm/shared/src/utils.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/defaultAttributes.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/Icon.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/createLucideIcon.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/arrow-right.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/check.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/circle-check.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/code-xml.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/copy.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/cpu.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/external-link.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/eye.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/layers.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/palette.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/panels-top-left.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/send.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/sparkles.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/terminal.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/icons/x.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+
+lucide-react/dist/esm/lucide-react.js:
+  (**
+   * @license lucide-react v0.511.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   *)
+*/
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+
+                // Include the compiled error boundary code
+                var ErrorBoundaryModule = (() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
+      }
+    return a;
+  };
+  var __objRest = (source, exclude) => {
+    var target = {};
+    for (var prop in source)
+      if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+        target[prop] = source[prop];
+    if (source != null && __getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(source)) {
+        if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+          target[prop] = source[prop];
+      }
+    return target;
+  };
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+
+  // node_modules/react/cjs/react.development.js
+  var require_react_development = __commonJS({
+    "node_modules/react/cjs/react.development.js"(exports, module) {
+      "use strict";
+      (function() {
+        function defineDeprecationWarning(methodName, info) {
+          Object.defineProperty(Component.prototype, methodName, {
+            get: function() {
+              console.warn(
+                "%s(...) is deprecated in plain JavaScript React classes. %s",
+                info[0],
+                info[1]
+              );
+            }
+          });
+        }
+        function getIteratorFn(maybeIterable) {
+          if (null === maybeIterable || "object" !== typeof maybeIterable)
+            return null;
+          maybeIterable = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable["@@iterator"];
+          return "function" === typeof maybeIterable ? maybeIterable : null;
+        }
+        function warnNoop(publicInstance, callerName) {
+          publicInstance = (publicInstance = publicInstance.constructor) && (publicInstance.displayName || publicInstance.name) || "ReactClass";
+          var warningKey = publicInstance + "." + callerName;
+          didWarnStateUpdateForUnmountedComponent[warningKey] || (console.error(
+            "Can't call %s on a component that is not yet mounted. This is a no-op, but it might indicate a bug in your application. Instead, assign to `this.state` directly or define a `state = {};` class property with the desired state in the %s component.",
+            callerName,
+            publicInstance
+          ), didWarnStateUpdateForUnmountedComponent[warningKey] = true);
+        }
+        function Component(props, context, updater) {
+          this.props = props;
+          this.context = context;
+          this.refs = emptyObject;
+          this.updater = updater || ReactNoopUpdateQueue;
+        }
+        function ComponentDummy() {
+        }
+        function PureComponent(props, context, updater) {
+          this.props = props;
+          this.context = context;
+          this.refs = emptyObject;
+          this.updater = updater || ReactNoopUpdateQueue;
+        }
+        function testStringCoercion(value) {
+          return "" + value;
+        }
+        function checkKeyStringCoercion(value) {
+          try {
+            testStringCoercion(value);
+            var JSCompiler_inline_result = false;
+          } catch (e) {
+            JSCompiler_inline_result = true;
+          }
+          if (JSCompiler_inline_result) {
+            JSCompiler_inline_result = console;
+            var JSCompiler_temp_const = JSCompiler_inline_result.error;
+            var JSCompiler_inline_result$jscomp$0 = "function" === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag] || value.constructor.name || "Object";
+            JSCompiler_temp_const.call(
+              JSCompiler_inline_result,
+              "The provided key is an unsupported type %s. This value must be coerced to a string before using it here.",
+              JSCompiler_inline_result$jscomp$0
+            );
+            return testStringCoercion(value);
+          }
+        }
+        function getComponentNameFromType(type) {
+          if (null == type)
+            return null;
+          if ("function" === typeof type)
+            return type.$$typeof === REACT_CLIENT_REFERENCE ? null : type.displayName || type.name || null;
+          if ("string" === typeof type)
+            return type;
+          switch (type) {
+            case REACT_FRAGMENT_TYPE:
+              return "Fragment";
+            case REACT_PROFILER_TYPE:
+              return "Profiler";
+            case REACT_STRICT_MODE_TYPE:
+              return "StrictMode";
+            case REACT_SUSPENSE_TYPE:
+              return "Suspense";
+            case REACT_SUSPENSE_LIST_TYPE:
+              return "SuspenseList";
+            case REACT_ACTIVITY_TYPE:
+              return "Activity";
+          }
+          if ("object" === typeof type)
+            switch ("number" === typeof type.tag && console.error(
+              "Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."
+            ), type.$$typeof) {
+              case REACT_PORTAL_TYPE:
+                return "Portal";
+              case REACT_CONTEXT_TYPE:
+                return (type.displayName || "Context") + ".Provider";
+              case REACT_CONSUMER_TYPE:
+                return (type._context.displayName || "Context") + ".Consumer";
+              case REACT_FORWARD_REF_TYPE:
+                var innerType = type.render;
+                type = type.displayName;
+                type || (type = innerType.displayName || innerType.name || "", type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef");
+                return type;
+              case REACT_MEMO_TYPE:
+                return innerType = type.displayName || null, null !== innerType ? innerType : getComponentNameFromType(type.type) || "Memo";
+              case REACT_LAZY_TYPE:
+                innerType = type._payload;
+                type = type._init;
+                try {
+                  return getComponentNameFromType(type(innerType));
+                } catch (x) {
+                }
+            }
+          return null;
+        }
+        function getTaskName(type) {
+          if (type === REACT_FRAGMENT_TYPE)
+            return "<>";
+          if ("object" === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
+            return "<...>";
+          try {
+            var name = getComponentNameFromType(type);
+            return name ? "<" + name + ">" : "<...>";
+          } catch (x) {
+            return "<...>";
+          }
+        }
+        function getOwner() {
+          var dispatcher = ReactSharedInternals.A;
+          return null === dispatcher ? null : dispatcher.getOwner();
+        }
+        function UnknownOwner() {
+          return Error("react-stack-top-frame");
+        }
+        function hasValidKey(config) {
+          if (hasOwnProperty.call(config, "key")) {
+            var getter = Object.getOwnPropertyDescriptor(config, "key").get;
+            if (getter && getter.isReactWarning)
+              return false;
+          }
+          return void 0 !== config.key;
+        }
+        function defineKeyPropWarningGetter(props, displayName) {
+          function warnAboutAccessingKey() {
+            specialPropKeyWarningShown || (specialPropKeyWarningShown = true, console.error(
+              "%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)",
+              displayName
+            ));
+          }
+          warnAboutAccessingKey.isReactWarning = true;
+          Object.defineProperty(props, "key", {
+            get: warnAboutAccessingKey,
+            configurable: true
+          });
+        }
+        function elementRefGetterWithDeprecationWarning() {
+          var componentName = getComponentNameFromType(this.type);
+          didWarnAboutElementRef[componentName] || (didWarnAboutElementRef[componentName] = true, console.error(
+            "Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release."
+          ));
+          componentName = this.props.ref;
+          return void 0 !== componentName ? componentName : null;
+        }
+        function ReactElement(type, key, self, source, owner, props, debugStack, debugTask) {
+          self = props.ref;
+          type = {
+            $$typeof: REACT_ELEMENT_TYPE,
+            type,
+            key,
+            props,
+            _owner: owner
+          };
+          null !== (void 0 !== self ? self : null) ? Object.defineProperty(type, "ref", {
+            enumerable: false,
+            get: elementRefGetterWithDeprecationWarning
+          }) : Object.defineProperty(type, "ref", { enumerable: false, value: null });
+          type._store = {};
+          Object.defineProperty(type._store, "validated", {
+            configurable: false,
+            enumerable: false,
+            writable: true,
+            value: 0
+          });
+          Object.defineProperty(type, "_debugInfo", {
+            configurable: false,
+            enumerable: false,
+            writable: true,
+            value: null
+          });
+          Object.defineProperty(type, "_debugStack", {
+            configurable: false,
+            enumerable: false,
+            writable: true,
+            value: debugStack
+          });
+          Object.defineProperty(type, "_debugTask", {
+            configurable: false,
+            enumerable: false,
+            writable: true,
+            value: debugTask
+          });
+          Object.freeze && (Object.freeze(type.props), Object.freeze(type));
+          return type;
+        }
+        function cloneAndReplaceKey(oldElement, newKey) {
+          newKey = ReactElement(
+            oldElement.type,
+            newKey,
+            void 0,
+            void 0,
+            oldElement._owner,
+            oldElement.props,
+            oldElement._debugStack,
+            oldElement._debugTask
+          );
+          oldElement._store && (newKey._store.validated = oldElement._store.validated);
+          return newKey;
+        }
+        function isValidElement(object) {
+          return "object" === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE;
+        }
+        function escape(key) {
+          var escaperLookup = { "=": "=0", ":": "=2" };
+          return "$" + key.replace(/[=:]/g, function(match) {
+            return escaperLookup[match];
+          });
+        }
+        function getElementKey(element, index) {
+          return "object" === typeof element && null !== element && null != element.key ? (checkKeyStringCoercion(element.key), escape("" + element.key)) : index.toString(36);
+        }
+        function noop$1() {
+        }
+        function resolveThenable(thenable) {
+          switch (thenable.status) {
+            case "fulfilled":
+              return thenable.value;
+            case "rejected":
+              throw thenable.reason;
+            default:
+              switch ("string" === typeof thenable.status ? thenable.then(noop$1, noop$1) : (thenable.status = "pending", thenable.then(
+                function(fulfilledValue) {
+                  "pending" === thenable.status && (thenable.status = "fulfilled", thenable.value = fulfilledValue);
+                },
+                function(error) {
+                  "pending" === thenable.status && (thenable.status = "rejected", thenable.reason = error);
+                }
+              )), thenable.status) {
+                case "fulfilled":
+                  return thenable.value;
+                case "rejected":
+                  throw thenable.reason;
+              }
+          }
+          throw thenable;
+        }
+        function mapIntoArray(children, array, escapedPrefix, nameSoFar, callback) {
+          var type = typeof children;
+          if ("undefined" === type || "boolean" === type)
+            children = null;
+          var invokeCallback = false;
+          if (null === children)
+            invokeCallback = true;
+          else
+            switch (type) {
+              case "bigint":
+              case "string":
+              case "number":
+                invokeCallback = true;
+                break;
+              case "object":
+                switch (children.$$typeof) {
+                  case REACT_ELEMENT_TYPE:
+                  case REACT_PORTAL_TYPE:
+                    invokeCallback = true;
+                    break;
+                  case REACT_LAZY_TYPE:
+                    return invokeCallback = children._init, mapIntoArray(
+                      invokeCallback(children._payload),
+                      array,
+                      escapedPrefix,
+                      nameSoFar,
+                      callback
+                    );
+                }
+            }
+          if (invokeCallback) {
+            invokeCallback = children;
+            callback = callback(invokeCallback);
+            var childKey = "" === nameSoFar ? "." + getElementKey(invokeCallback, 0) : nameSoFar;
+            isArrayImpl(callback) ? (escapedPrefix = "", null != childKey && (escapedPrefix = childKey.replace(userProvidedKeyEscapeRegex, "$&/") + "/"), mapIntoArray(callback, array, escapedPrefix, "", function(c) {
+              return c;
+            })) : null != callback && (isValidElement(callback) && (null != callback.key && (invokeCallback && invokeCallback.key === callback.key || checkKeyStringCoercion(callback.key)), escapedPrefix = cloneAndReplaceKey(
+              callback,
+              escapedPrefix + (null == callback.key || invokeCallback && invokeCallback.key === callback.key ? "" : ("" + callback.key).replace(
+                userProvidedKeyEscapeRegex,
+                "$&/"
+              ) + "/") + childKey
+            ), "" !== nameSoFar && null != invokeCallback && isValidElement(invokeCallback) && null == invokeCallback.key && invokeCallback._store && !invokeCallback._store.validated && (escapedPrefix._store.validated = 2), callback = escapedPrefix), array.push(callback));
+            return 1;
+          }
+          invokeCallback = 0;
+          childKey = "" === nameSoFar ? "." : nameSoFar + ":";
+          if (isArrayImpl(children))
+            for (var i = 0; i < children.length; i++)
+              nameSoFar = children[i], type = childKey + getElementKey(nameSoFar, i), invokeCallback += mapIntoArray(
+                nameSoFar,
+                array,
+                escapedPrefix,
+                type,
+                callback
+              );
+          else if (i = getIteratorFn(children), "function" === typeof i)
+            for (i === children.entries && (didWarnAboutMaps || console.warn(
+              "Using Maps as children is not supported. Use an array of keyed ReactElements instead."
+            ), didWarnAboutMaps = true), children = i.call(children), i = 0; !(nameSoFar = children.next()).done; )
+              nameSoFar = nameSoFar.value, type = childKey + getElementKey(nameSoFar, i++), invokeCallback += mapIntoArray(
+                nameSoFar,
+                array,
+                escapedPrefix,
+                type,
+                callback
+              );
+          else if ("object" === type) {
+            if ("function" === typeof children.then)
+              return mapIntoArray(
+                resolveThenable(children),
+                array,
+                escapedPrefix,
+                nameSoFar,
+                callback
+              );
+            array = String(children);
+            throw Error(
+              "Objects are not valid as a React child (found: " + ("[object Object]" === array ? "object with keys {" + Object.keys(children).join(", ") + "}" : array) + "). If you meant to render a collection of children, use an array instead."
+            );
+          }
+          return invokeCallback;
+        }
+        function mapChildren(children, func, context) {
+          if (null == children)
+            return children;
+          var result = [], count = 0;
+          mapIntoArray(children, result, "", "", function(child) {
+            return func.call(context, child, count++);
+          });
+          return result;
+        }
+        function lazyInitializer(payload) {
+          if (-1 === payload._status) {
+            var ctor = payload._result;
+            ctor = ctor();
+            ctor.then(
+              function(moduleObject) {
+                if (0 === payload._status || -1 === payload._status)
+                  payload._status = 1, payload._result = moduleObject;
+              },
+              function(error) {
+                if (0 === payload._status || -1 === payload._status)
+                  payload._status = 2, payload._result = error;
+              }
+            );
+            -1 === payload._status && (payload._status = 0, payload._result = ctor);
+          }
+          if (1 === payload._status)
+            return ctor = payload._result, void 0 === ctor && console.error(
+              "lazy: Expected the result of a dynamic import() call. Instead received: %s\n\nYour code should look like: \n  const MyComponent = lazy(() => import('./MyComponent'))\n\nDid you accidentally put curly braces around the import?",
+              ctor
+            ), "default" in ctor || console.error(
+              "lazy: Expected the result of a dynamic import() call. Instead received: %s\n\nYour code should look like: \n  const MyComponent = lazy(() => import('./MyComponent'))",
+              ctor
+            ), ctor.default;
+          throw payload._result;
+        }
+        function resolveDispatcher() {
+          var dispatcher = ReactSharedInternals.H;
+          null === dispatcher && console.error(
+            "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem."
+          );
+          return dispatcher;
+        }
+        function noop() {
+        }
+        function enqueueTask(task) {
+          if (null === enqueueTaskImpl)
+            try {
+              var requireString = ("require" + Math.random()).slice(0, 7);
+              enqueueTaskImpl = (module && module[requireString]).call(
+                module,
+                "timers"
+              ).setImmediate;
+            } catch (_err) {
+              enqueueTaskImpl = function(callback) {
+                false === didWarnAboutMessageChannel && (didWarnAboutMessageChannel = true, "undefined" === typeof MessageChannel && console.error(
+                  "This browser does not have a MessageChannel implementation, so enqueuing tasks via await act(async () => ...) will fail. Please file an issue at https://github.com/facebook/react/issues if you encounter this warning."
+                ));
+                var channel = new MessageChannel();
+                channel.port1.onmessage = callback;
+                channel.port2.postMessage(void 0);
+              };
+            }
+          return enqueueTaskImpl(task);
+        }
+        function aggregateErrors(errors) {
+          return 1 < errors.length && "function" === typeof AggregateError ? new AggregateError(errors) : errors[0];
+        }
+        function popActScope(prevActQueue, prevActScopeDepth) {
+          prevActScopeDepth !== actScopeDepth - 1 && console.error(
+            "You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. "
+          );
+          actScopeDepth = prevActScopeDepth;
+        }
+        function recursivelyFlushAsyncActWork(returnValue, resolve, reject) {
+          var queue = ReactSharedInternals.actQueue;
+          if (null !== queue)
+            if (0 !== queue.length)
+              try {
+                flushActQueue(queue);
+                enqueueTask(function() {
+                  return recursivelyFlushAsyncActWork(returnValue, resolve, reject);
+                });
+                return;
+              } catch (error) {
+                ReactSharedInternals.thrownErrors.push(error);
+              }
+            else
+              ReactSharedInternals.actQueue = null;
+          0 < ReactSharedInternals.thrownErrors.length ? (queue = aggregateErrors(ReactSharedInternals.thrownErrors), ReactSharedInternals.thrownErrors.length = 0, reject(queue)) : resolve(returnValue);
+        }
+        function flushActQueue(queue) {
+          if (!isFlushing) {
+            isFlushing = true;
+            var i = 0;
+            try {
+              for (; i < queue.length; i++) {
+                var callback = queue[i];
+                do {
+                  ReactSharedInternals.didUsePromise = false;
+                  var continuation = callback(false);
+                  if (null !== continuation) {
+                    if (ReactSharedInternals.didUsePromise) {
+                      queue[i] = callback;
+                      queue.splice(0, i);
+                      return;
+                    }
+                    callback = continuation;
+                  } else
+                    break;
+                } while (1);
+              }
+              queue.length = 0;
+            } catch (error) {
+              queue.splice(0, i + 1), ReactSharedInternals.thrownErrors.push(error);
+            } finally {
+              isFlushing = false;
+            }
+          }
+        }
+        "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
+        var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
+        Symbol.for("react.provider");
+        var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, didWarnStateUpdateForUnmountedComponent = {}, ReactNoopUpdateQueue = {
+          isMounted: function() {
+            return false;
+          },
+          enqueueForceUpdate: function(publicInstance) {
+            warnNoop(publicInstance, "forceUpdate");
+          },
+          enqueueReplaceState: function(publicInstance) {
+            warnNoop(publicInstance, "replaceState");
+          },
+          enqueueSetState: function(publicInstance) {
+            warnNoop(publicInstance, "setState");
+          }
+        }, assign = Object.assign, emptyObject = {};
+        Object.freeze(emptyObject);
+        Component.prototype.isReactComponent = {};
+        Component.prototype.setState = function(partialState, callback) {
+          if ("object" !== typeof partialState && "function" !== typeof partialState && null != partialState)
+            throw Error(
+              "takes an object of state variables to update or a function which returns an object of state variables."
+            );
+          this.updater.enqueueSetState(this, partialState, callback, "setState");
+        };
+        Component.prototype.forceUpdate = function(callback) {
+          this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
+        };
+        var deprecatedAPIs = {
+          isMounted: [
+            "isMounted",
+            "Instead, make sure to clean up subscriptions and pending requests in componentWillUnmount to prevent memory leaks."
+          ],
+          replaceState: [
+            "replaceState",
+            "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."
+          ]
+        }, fnName;
+        for (fnName in deprecatedAPIs)
+          deprecatedAPIs.hasOwnProperty(fnName) && defineDeprecationWarning(fnName, deprecatedAPIs[fnName]);
+        ComponentDummy.prototype = Component.prototype;
+        deprecatedAPIs = PureComponent.prototype = new ComponentDummy();
+        deprecatedAPIs.constructor = PureComponent;
+        assign(deprecatedAPIs, Component.prototype);
+        deprecatedAPIs.isPureReactComponent = true;
+        var isArrayImpl = Array.isArray, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = {
+          H: null,
+          A: null,
+          T: null,
+          S: null,
+          V: null,
+          actQueue: null,
+          isBatchingLegacy: false,
+          didScheduleLegacyUpdate: false,
+          didUsePromise: false,
+          thrownErrors: [],
+          getCurrentStack: null,
+          recentlyCreatedOwnerStacks: 0
+        }, hasOwnProperty = Object.prototype.hasOwnProperty, createTask = console.createTask ? console.createTask : function() {
+          return null;
+        };
+        deprecatedAPIs = {
+          "react-stack-bottom-frame": function(callStackForError) {
+            return callStackForError();
+          }
+        };
+        var specialPropKeyWarningShown, didWarnAboutOldJSXRuntime;
+        var didWarnAboutElementRef = {};
+        var unknownOwnerDebugStack = deprecatedAPIs["react-stack-bottom-frame"].bind(deprecatedAPIs, UnknownOwner)();
+        var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
+        var didWarnAboutMaps = false, userProvidedKeyEscapeRegex = /\/+/g, reportGlobalError = "function" === typeof reportError ? reportError : function(error) {
+          if ("object" === typeof window && "function" === typeof window.ErrorEvent) {
+            var event = new window.ErrorEvent("error", {
+              bubbles: true,
+              cancelable: true,
+              message: "object" === typeof error && null !== error && "string" === typeof error.message ? String(error.message) : String(error),
+              error
+            });
+            if (!window.dispatchEvent(event))
+              return;
+          } else if ("object" === typeof process && "function" === typeof process.emit) {
+            process.emit("uncaughtException", error);
+            return;
+          }
+          console.error(error);
+        }, didWarnAboutMessageChannel = false, enqueueTaskImpl = null, actScopeDepth = 0, didWarnNoAwaitAct = false, isFlushing = false, queueSeveralMicrotasks = "function" === typeof queueMicrotask ? function(callback) {
+          queueMicrotask(function() {
+            return queueMicrotask(callback);
+          });
+        } : enqueueTask;
+        deprecatedAPIs = Object.freeze({
+          __proto__: null,
+          c: function(size) {
+            return resolveDispatcher().useMemoCache(size);
+          }
+        });
+        exports.Children = {
+          map: mapChildren,
+          forEach: function(children, forEachFunc, forEachContext) {
+            mapChildren(
+              children,
+              function() {
+                forEachFunc.apply(this, arguments);
+              },
+              forEachContext
+            );
+          },
+          count: function(children) {
+            var n = 0;
+            mapChildren(children, function() {
+              n++;
+            });
+            return n;
+          },
+          toArray: function(children) {
+            return mapChildren(children, function(child) {
+              return child;
+            }) || [];
+          },
+          only: function(children) {
+            if (!isValidElement(children))
+              throw Error(
+                "React.Children.only expected to receive a single React element child."
+              );
+            return children;
+          }
+        };
+        exports.Component = Component;
+        exports.Fragment = REACT_FRAGMENT_TYPE;
+        exports.Profiler = REACT_PROFILER_TYPE;
+        exports.PureComponent = PureComponent;
+        exports.StrictMode = REACT_STRICT_MODE_TYPE;
+        exports.Suspense = REACT_SUSPENSE_TYPE;
+        exports.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = ReactSharedInternals;
+        exports.__COMPILER_RUNTIME = deprecatedAPIs;
+        exports.act = function(callback) {
+          var prevActQueue = ReactSharedInternals.actQueue, prevActScopeDepth = actScopeDepth;
+          actScopeDepth++;
+          var queue = ReactSharedInternals.actQueue = null !== prevActQueue ? prevActQueue : [], didAwaitActCall = false;
+          try {
+            var result = callback();
+          } catch (error) {
+            ReactSharedInternals.thrownErrors.push(error);
+          }
+          if (0 < ReactSharedInternals.thrownErrors.length)
+            throw popActScope(prevActQueue, prevActScopeDepth), callback = aggregateErrors(ReactSharedInternals.thrownErrors), ReactSharedInternals.thrownErrors.length = 0, callback;
+          if (null !== result && "object" === typeof result && "function" === typeof result.then) {
+            var thenable = result;
+            queueSeveralMicrotasks(function() {
+              didAwaitActCall || didWarnNoAwaitAct || (didWarnNoAwaitAct = true, console.error(
+                "You called act(async () => ...) without await. This could lead to unexpected testing behaviour, interleaving multiple act calls and mixing their scopes. You should - await act(async () => ...);"
+              ));
+            });
+            return {
+              then: function(resolve, reject) {
+                didAwaitActCall = true;
+                thenable.then(
+                  function(returnValue) {
+                    popActScope(prevActQueue, prevActScopeDepth);
+                    if (0 === prevActScopeDepth) {
+                      try {
+                        flushActQueue(queue), enqueueTask(function() {
+                          return recursivelyFlushAsyncActWork(
+                            returnValue,
+                            resolve,
+                            reject
+                          );
+                        });
+                      } catch (error$0) {
+                        ReactSharedInternals.thrownErrors.push(error$0);
+                      }
+                      if (0 < ReactSharedInternals.thrownErrors.length) {
+                        var _thrownError = aggregateErrors(
+                          ReactSharedInternals.thrownErrors
+                        );
+                        ReactSharedInternals.thrownErrors.length = 0;
+                        reject(_thrownError);
+                      }
+                    } else
+                      resolve(returnValue);
+                  },
+                  function(error) {
+                    popActScope(prevActQueue, prevActScopeDepth);
+                    0 < ReactSharedInternals.thrownErrors.length ? (error = aggregateErrors(
+                      ReactSharedInternals.thrownErrors
+                    ), ReactSharedInternals.thrownErrors.length = 0, reject(error)) : reject(error);
+                  }
+                );
+              }
+            };
+          }
+          var returnValue$jscomp$0 = result;
+          popActScope(prevActQueue, prevActScopeDepth);
+          0 === prevActScopeDepth && (flushActQueue(queue), 0 !== queue.length && queueSeveralMicrotasks(function() {
+            didAwaitActCall || didWarnNoAwaitAct || (didWarnNoAwaitAct = true, console.error(
+              "A component suspended inside an `act` scope, but the `act` call was not awaited. When testing React components that depend on asynchronous data, you must await the result:\n\nawait act(() => ...)"
+            ));
+          }), ReactSharedInternals.actQueue = null);
+          if (0 < ReactSharedInternals.thrownErrors.length)
+            throw callback = aggregateErrors(ReactSharedInternals.thrownErrors), ReactSharedInternals.thrownErrors.length = 0, callback;
+          return {
+            then: function(resolve, reject) {
+              didAwaitActCall = true;
+              0 === prevActScopeDepth ? (ReactSharedInternals.actQueue = queue, enqueueTask(function() {
+                return recursivelyFlushAsyncActWork(
+                  returnValue$jscomp$0,
+                  resolve,
+                  reject
+                );
+              })) : resolve(returnValue$jscomp$0);
+            }
+          };
+        };
+        exports.cache = function(fn) {
+          return function() {
+            return fn.apply(null, arguments);
+          };
+        };
+        exports.captureOwnerStack = function() {
+          var getCurrentStack = ReactSharedInternals.getCurrentStack;
+          return null === getCurrentStack ? null : getCurrentStack();
+        };
+        exports.cloneElement = function(element, config, children) {
+          if (null === element || void 0 === element)
+            throw Error(
+              "The argument must be a React element, but you passed " + element + "."
+            );
+          var props = assign({}, element.props), key = element.key, owner = element._owner;
+          if (null != config) {
+            var JSCompiler_inline_result;
+            a: {
+              if (hasOwnProperty.call(config, "ref") && (JSCompiler_inline_result = Object.getOwnPropertyDescriptor(
+                config,
+                "ref"
+              ).get) && JSCompiler_inline_result.isReactWarning) {
+                JSCompiler_inline_result = false;
+                break a;
+              }
+              JSCompiler_inline_result = void 0 !== config.ref;
+            }
+            JSCompiler_inline_result && (owner = getOwner());
+            hasValidKey(config) && (checkKeyStringCoercion(config.key), key = "" + config.key);
+            for (propName in config)
+              !hasOwnProperty.call(config, propName) || "key" === propName || "__self" === propName || "__source" === propName || "ref" === propName && void 0 === config.ref || (props[propName] = config[propName]);
+          }
+          var propName = arguments.length - 2;
+          if (1 === propName)
+            props.children = children;
+          else if (1 < propName) {
+            JSCompiler_inline_result = Array(propName);
+            for (var i = 0; i < propName; i++)
+              JSCompiler_inline_result[i] = arguments[i + 2];
+            props.children = JSCompiler_inline_result;
+          }
+          props = ReactElement(
+            element.type,
+            key,
+            void 0,
+            void 0,
+            owner,
+            props,
+            element._debugStack,
+            element._debugTask
+          );
+          for (key = 2; key < arguments.length; key++)
+            owner = arguments[key], isValidElement(owner) && owner._store && (owner._store.validated = 1);
+          return props;
+        };
+        exports.createContext = function(defaultValue) {
+          defaultValue = {
+            $$typeof: REACT_CONTEXT_TYPE,
+            _currentValue: defaultValue,
+            _currentValue2: defaultValue,
+            _threadCount: 0,
+            Provider: null,
+            Consumer: null
+          };
+          defaultValue.Provider = defaultValue;
+          defaultValue.Consumer = {
+            $$typeof: REACT_CONSUMER_TYPE,
+            _context: defaultValue
+          };
+          defaultValue._currentRenderer = null;
+          defaultValue._currentRenderer2 = null;
+          return defaultValue;
+        };
+        exports.createElement = function(type, config, children) {
+          for (var i = 2; i < arguments.length; i++) {
+            var node = arguments[i];
+            isValidElement(node) && node._store && (node._store.validated = 1);
+          }
+          i = {};
+          node = null;
+          if (null != config)
+            for (propName in didWarnAboutOldJSXRuntime || !("__self" in config) || "key" in config || (didWarnAboutOldJSXRuntime = true, console.warn(
+              "Your app (or one of its dependencies) is using an outdated JSX transform. Update to the modern JSX transform for faster performance: https://react.dev/link/new-jsx-transform"
+            )), hasValidKey(config) && (checkKeyStringCoercion(config.key), node = "" + config.key), config)
+              hasOwnProperty.call(config, propName) && "key" !== propName && "__self" !== propName && "__source" !== propName && (i[propName] = config[propName]);
+          var childrenLength = arguments.length - 2;
+          if (1 === childrenLength)
+            i.children = children;
+          else if (1 < childrenLength) {
+            for (var childArray = Array(childrenLength), _i = 0; _i < childrenLength; _i++)
+              childArray[_i] = arguments[_i + 2];
+            Object.freeze && Object.freeze(childArray);
+            i.children = childArray;
+          }
+          if (type && type.defaultProps)
+            for (propName in childrenLength = type.defaultProps, childrenLength)
+              void 0 === i[propName] && (i[propName] = childrenLength[propName]);
+          node && defineKeyPropWarningGetter(
+            i,
+            "function" === typeof type ? type.displayName || type.name || "Unknown" : type
+          );
+          var propName = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+          return ReactElement(
+            type,
+            node,
+            void 0,
+            void 0,
+            getOwner(),
+            i,
+            propName ? Error("react-stack-top-frame") : unknownOwnerDebugStack,
+            propName ? createTask(getTaskName(type)) : unknownOwnerDebugTask
+          );
+        };
+        exports.createRef = function() {
+          var refObject = { current: null };
+          Object.seal(refObject);
+          return refObject;
+        };
+        exports.forwardRef = function(render) {
+          null != render && render.$$typeof === REACT_MEMO_TYPE ? console.error(
+            "forwardRef requires a render function but received a `memo` component. Instead of forwardRef(memo(...)), use memo(forwardRef(...))."
+          ) : "function" !== typeof render ? console.error(
+            "forwardRef requires a render function but was given %s.",
+            null === render ? "null" : typeof render
+          ) : 0 !== render.length && 2 !== render.length && console.error(
+            "forwardRef render functions accept exactly two parameters: props and ref. %s",
+            1 === render.length ? "Did you forget to use the ref parameter?" : "Any additional parameter will be undefined."
+          );
+          null != render && null != render.defaultProps && console.error(
+            "forwardRef render functions do not support defaultProps. Did you accidentally pass a React component?"
+          );
+          var elementType = { $$typeof: REACT_FORWARD_REF_TYPE, render }, ownName;
+          Object.defineProperty(elementType, "displayName", {
+            enumerable: false,
+            configurable: true,
+            get: function() {
+              return ownName;
+            },
+            set: function(name) {
+              ownName = name;
+              render.name || render.displayName || (Object.defineProperty(render, "name", { value: name }), render.displayName = name);
+            }
+          });
+          return elementType;
+        };
+        exports.isValidElement = isValidElement;
+        exports.lazy = function(ctor) {
+          return {
+            $$typeof: REACT_LAZY_TYPE,
+            _payload: { _status: -1, _result: ctor },
+            _init: lazyInitializer
+          };
+        };
+        exports.memo = function(type, compare) {
+          null == type && console.error(
+            "memo: The first argument must be a component. Instead received: %s",
+            null === type ? "null" : typeof type
+          );
+          compare = {
+            $$typeof: REACT_MEMO_TYPE,
+            type,
+            compare: void 0 === compare ? null : compare
+          };
+          var ownName;
+          Object.defineProperty(compare, "displayName", {
+            enumerable: false,
+            configurable: true,
+            get: function() {
+              return ownName;
+            },
+            set: function(name) {
+              ownName = name;
+              type.name || type.displayName || (Object.defineProperty(type, "name", { value: name }), type.displayName = name);
+            }
+          });
+          return compare;
+        };
+        exports.startTransition = function(scope) {
+          var prevTransition = ReactSharedInternals.T, currentTransition = {};
+          ReactSharedInternals.T = currentTransition;
+          currentTransition._updatedFibers = /* @__PURE__ */ new Set();
+          try {
+            var returnValue = scope(), onStartTransitionFinish = ReactSharedInternals.S;
+            null !== onStartTransitionFinish && onStartTransitionFinish(currentTransition, returnValue);
+            "object" === typeof returnValue && null !== returnValue && "function" === typeof returnValue.then && returnValue.then(noop, reportGlobalError);
+          } catch (error) {
+            reportGlobalError(error);
+          } finally {
+            null === prevTransition && currentTransition._updatedFibers && (scope = currentTransition._updatedFibers.size, currentTransition._updatedFibers.clear(), 10 < scope && console.warn(
+              "Detected a large number of updates inside startTransition. If this is due to a subscription please re-write it to use React provided hooks. Otherwise concurrent mode guarantees are off the table."
+            )), ReactSharedInternals.T = prevTransition;
+          }
+        };
+        exports.unstable_useCacheRefresh = function() {
+          return resolveDispatcher().useCacheRefresh();
+        };
+        exports.use = function(usable) {
+          return resolveDispatcher().use(usable);
+        };
+        exports.useActionState = function(action, initialState, permalink) {
+          return resolveDispatcher().useActionState(
+            action,
+            initialState,
+            permalink
+          );
+        };
+        exports.useCallback = function(callback, deps) {
+          return resolveDispatcher().useCallback(callback, deps);
+        };
+        exports.useContext = function(Context) {
+          var dispatcher = resolveDispatcher();
+          Context.$$typeof === REACT_CONSUMER_TYPE && console.error(
+            "Calling useContext(Context.Consumer) is not supported and will cause bugs. Did you mean to call useContext(Context) instead?"
+          );
+          return dispatcher.useContext(Context);
+        };
+        exports.useDebugValue = function(value, formatterFn) {
+          return resolveDispatcher().useDebugValue(value, formatterFn);
+        };
+        exports.useDeferredValue = function(value, initialValue) {
+          return resolveDispatcher().useDeferredValue(value, initialValue);
+        };
+        exports.useEffect = function(create, createDeps, update) {
+          null == create && console.warn(
+            "React Hook useEffect requires an effect callback. Did you forget to pass a callback to the hook?"
+          );
+          var dispatcher = resolveDispatcher();
+          if ("function" === typeof update)
+            throw Error(
+              "useEffect CRUD overload is not enabled in this build of React."
+            );
+          return dispatcher.useEffect(create, createDeps);
+        };
+        exports.useId = function() {
+          return resolveDispatcher().useId();
+        };
+        exports.useImperativeHandle = function(ref, create, deps) {
+          return resolveDispatcher().useImperativeHandle(ref, create, deps);
+        };
+        exports.useInsertionEffect = function(create, deps) {
+          null == create && console.warn(
+            "React Hook useInsertionEffect requires an effect callback. Did you forget to pass a callback to the hook?"
+          );
+          return resolveDispatcher().useInsertionEffect(create, deps);
+        };
+        exports.useLayoutEffect = function(create, deps) {
+          null == create && console.warn(
+            "React Hook useLayoutEffect requires an effect callback. Did you forget to pass a callback to the hook?"
+          );
+          return resolveDispatcher().useLayoutEffect(create, deps);
+        };
+        exports.useMemo = function(create, deps) {
+          return resolveDispatcher().useMemo(create, deps);
+        };
+        exports.useOptimistic = function(passthrough, reducer) {
+          return resolveDispatcher().useOptimistic(passthrough, reducer);
+        };
+        exports.useReducer = function(reducer, initialArg, init) {
+          return resolveDispatcher().useReducer(reducer, initialArg, init);
+        };
+        exports.useRef = function(initialValue) {
+          return resolveDispatcher().useRef(initialValue);
+        };
+        exports.useState = function(initialState) {
+          return resolveDispatcher().useState(initialState);
+        };
+        exports.useSyncExternalStore = function(subscribe, getSnapshot, getServerSnapshot) {
+          return resolveDispatcher().useSyncExternalStore(
+            subscribe,
+            getSnapshot,
+            getServerSnapshot
+          );
+        };
+        exports.useTransition = function() {
+          return resolveDispatcher().useTransition();
+        };
+        exports.version = "19.1.0";
+        "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
+      })();
+    }
+  });
+
+  // node_modules/react/index.js
+  var require_react = __commonJS({
+    "node_modules/react/index.js"(exports, module) {
+      "use strict";
+      if (false) {
+        module.exports = null;
+      } else {
+        module.exports = require_react_development();
+      }
+    }
+  });
+
+  // <stdin>
+  var require_stdin = __commonJS({
+    "<stdin>"(exports, module) {
+      var React = require_react();
+      function createErrorBoundary() {
+        return class ErrorBoundary extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {
+              hasError: false,
+              error: null,
+              errorInfo: null,
+              isCopied: false,
+              isMinimized: false,
+              isFullWidth: true,
+              copyButtonState: "default"
+            };
+            this.copyErrorToClipboard = this.copyErrorToClipboard.bind(this);
+            this.toggleMinimize = this.toggleMinimize.bind(this);
+            this.toggleFullWidth = this.toggleFullWidth.bind(this);
+          }
+          static getDerivedStateFromError(error) {
+            return {
+              hasError: true,
+              error,
+              errorInfo: null,
+              isCopied: false,
+              isMinimized: false,
+              // Start expanded when error occurs
+              isFullWidth: false,
+              copyButtonState: "default"
+            };
+          }
+          componentDidCatch(error, errorInfo) {
+            this.setState({
+              error,
+              errorInfo
+            });
+            console.error("Error caught by ErrorBoundary:", error, errorInfo);
+          }
+          copyErrorToClipboard() {
+            if (this.state.error) {
+              const errorText = `Error: ${this.state.error.toString()}
+
+Component Stack:
+${this.state.errorInfo ? this.state.errorInfo.componentStack : "Not available"}`;
+              const fallbackCopyTextToClipboard = (text) => {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                  const successful = document.execCommand("copy");
+                  const msg = successful ? "Text copied to clipboard" : "Failed to copy text";
+                  console.log(msg);
+                  this.setState({
+                    isCopied: successful,
+                    copyButtonState: successful ? "copied" : "default"
+                  });
+                  if (successful) {
+                    setTimeout(() => {
+                      this.setState({
+                        isCopied: false,
+                        copyButtonState: "default"
+                      });
+                    }, 2e3);
+                  }
+                } catch (err) {
+                  console.error("Fallback: Failed to copy text: ", err);
+                } finally {
+                  document.body.removeChild(textArea);
+                }
+              };
+              if (!navigator.clipboard) {
+                fallbackCopyTextToClipboard(errorText);
+                return;
+              }
+              navigator.clipboard.writeText(errorText).then(() => {
+                this.setState({
+                  isCopied: true,
+                  copyButtonState: "copied"
+                });
+                setTimeout(() => {
+                  this.setState({
+                    isCopied: false,
+                    copyButtonState: "default"
+                  });
+                }, 2e3);
+              }).catch((err) => {
+                console.error("Failed to copy error details:", err);
+                fallbackCopyTextToClipboard(errorText);
+              });
+            }
+          }
+          toggleMinimize() {
+            this.setState((prevState) => ({
+              isMinimized: !prevState.isMinimized,
+              // If minimizing, ensure it's not full width
+              isFullWidth: prevState.isMinimized ? prevState.isFullWidth : false
+            }));
+          }
+          toggleFullWidth() {
+            if (!this.state.isMinimized) {
+              this.setState((prevState) => ({
+                isFullWidth: !prevState.isFullWidth
+              }));
+            }
+          }
+          render() {
+            if (this.state.hasError) {
+              const { isMinimized, isFullWidth, isCopied, error, errorInfo } = this.state;
+              const AlertTriangleIcon = (_a) => {
+                var _b = _a, { className } = _b, otherProps = __objRest(_b, ["className"]);
+                return /* @__PURE__ */ React.createElement(
+                  "svg",
+                  __spreadValues({
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: isMinimized ? "16" : "20",
+                    height: isMinimized ? "16" : "20",
+                    viewBox: "0 0 24 24",
+                    fill: "none",
+                    stroke: "currentColor",
+                    strokeWidth: "2",
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round",
+                    className: className || "text-red-500 dark:text-red-400"
+                  }, otherProps),
+                  /* @__PURE__ */ React.createElement("path", { d: "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" }),
+                  /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "9", x2: "12", y2: "13" }),
+                  /* @__PURE__ */ React.createElement("line", { x1: "12", y1: "17", x2: "12.01", y2: "17" })
+                );
+              };
+              const CopyIcon = () => /* @__PURE__ */ React.createElement(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "16",
+                  height: "16",
+                  viewBox: "0 0 24 24",
+                  fill: "none",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                },
+                /* @__PURE__ */ React.createElement("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2", ry: "2" }),
+                /* @__PURE__ */ React.createElement("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })
+              );
+              const MinimizeIcon = () => /* @__PURE__ */ React.createElement(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "16",
+                  height: "16",
+                  viewBox: "0 0 24 24",
+                  fill: "none",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                },
+                /* @__PURE__ */ React.createElement("line", { x1: "5", y1: "12", x2: "19", y2: "12" })
+              );
+              const ExpandIcon = () => /* @__PURE__ */ React.createElement(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "16",
+                  height: "16",
+                  viewBox: "0 0 24 24",
+                  fill: "none",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                },
+                /* @__PURE__ */ React.createElement("polyline", { points: "15 3 21 3 21 9" }),
+                /* @__PURE__ */ React.createElement("polyline", { points: "9 21 3 21 3 15" }),
+                /* @__PURE__ */ React.createElement("line", { x1: "21", y1: "3", x2: "14", y2: "10" }),
+                /* @__PURE__ */ React.createElement("line", { x1: "3", y1: "21", x2: "10", y2: "14" })
+              );
+              const CompressIcon = () => /* @__PURE__ */ React.createElement(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "16",
+                  height: "16",
+                  viewBox: "0 0 24 24",
+                  fill: "none",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                },
+                /* @__PURE__ */ React.createElement("polyline", { points: "4 14 10 14 10 20" }),
+                /* @__PURE__ */ React.createElement("polyline", { points: "20 10 14 10 14 4" }),
+                /* @__PURE__ */ React.createElement("line", { x1: "14", y1: "10", x2: "21", y2: "3" }),
+                /* @__PURE__ */ React.createElement("line", { x1: "3", y1: "21", x2: "10", y2: "14" })
+              );
+              const RefreshIcon = () => /* @__PURE__ */ React.createElement(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "16",
+                  height: "16",
+                  viewBox: "0 0 24 24",
+                  fill: "none",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                },
+                /* @__PURE__ */ React.createElement("path", { d: "M23 4v6h-6" }),
+                /* @__PURE__ */ React.createElement("path", { d: "M1 20v-6h6" }),
+                /* @__PURE__ */ React.createElement("path", { d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" })
+              );
+              const CheckIcon = () => /* @__PURE__ */ React.createElement(
+                "svg",
+                {
+                  xmlns: "http://www.w3.org/2000/svg",
+                  width: "14",
+                  height: "14",
+                  viewBox: "0 0 24 24",
+                  fill: "none",
+                  stroke: "currentColor",
+                  strokeWidth: "2",
+                  strokeLinecap: "round",
+                  strokeLinejoin: "round"
+                },
+                /* @__PURE__ */ React.createElement("path", { d: "M20 6L9 17l-5-5" })
+              );
+              if (isMinimized) {
+                return /* @__PURE__ */ React.createElement(React.Fragment, null, this.props.children, /* @__PURE__ */ React.createElement(
+                  "div",
+                  {
+                    className: "fixed bottom-4 right-4 z-[9999]",
+                    onClick: this.toggleMinimize
+                  },
+                  /* @__PURE__ */ React.createElement("div", { className: "group flex items-center justify-center w-10 h-10 rounded-full bg-red-500 shadow-lg cursor-pointer hover:bg-red-600 transition-colors dark:bg-red-700 dark:hover:bg-red-600" }, /* @__PURE__ */ React.createElement(AlertTriangleIcon, { className: "text-white dark:text-gray-100" }), /* @__PURE__ */ React.createElement("div", { className: "absolute right-12 bottom-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap dark:bg-gray-900 shadow-md" }, "Error - Click to expand"))
+                ));
+              }
+              const baseContainerClasses = "fixed bottom-0 z-[9999] transition-all duration-300 ease-in-out mb-8";
+              const innerBoxBaseClasses = "relative overflow-hidden rounded-lg border border-red-300 bg-white shadow-xl dark:border-red-700 dark:bg-gray-950";
+              const positionAndWidthClass = isFullWidth ? "inset-x-0 w-full" : "right-4 w-[32rem] max-w-[90vw]";
+              const paddingClass = isFullWidth ? "p-4" : "";
+              return /* @__PURE__ */ React.createElement(React.Fragment, null, this.props.children, /* @__PURE__ */ React.createElement("div", { className: `${baseContainerClasses} ${positionAndWidthClass} ${paddingClass}` }, /* @__PURE__ */ React.createElement(
+                "div",
+                {
+                  className: `${innerBoxBaseClasses} ${isFullWidth ? "mx-auto" : ""}`,
+                  style: isFullWidth ? { maxWidth: "100%" } : {}
+                },
+                /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-gradient-to-r from-red-100 to-red-200 px-3 py-2 dark:from-red-950/50 dark:to-red-900/50" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(AlertTriangleIcon, { className: "text-red-500 dark:text-red-400" }), /* @__PURE__ */ React.createElement("h3", { className: "text-sm font-semibold text-red-800 dark:text-red-300" }, "Sorry, something went wrong")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ React.createElement(
+                  "button",
+                  {
+                    onClick: () => window.location.reload(),
+                    className: "rounded p-1 text-gray-600 hover:bg-red-200/50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-red-800/50 dark:hover:text-gray-200 transition-colors",
+                    title: "Refresh page"
+                  },
+                  /* @__PURE__ */ React.createElement(RefreshIcon, null)
+                ), /* @__PURE__ */ React.createElement(
+                  "button",
+                  {
+                    onClick: this.toggleFullWidth,
+                    className: "rounded p-1 text-gray-600 hover:bg-red-200/50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-red-800/50 dark:hover:text-gray-200 transition-colors",
+                    title: isFullWidth ? "Reduce width" : "Expand to full width"
+                  },
+                  isFullWidth ? /* @__PURE__ */ React.createElement(CompressIcon, null) : /* @__PURE__ */ React.createElement(ExpandIcon, null)
+                ), /* @__PURE__ */ React.createElement(
+                  "button",
+                  {
+                    onClick: this.toggleMinimize,
+                    className: "rounded p-1 text-gray-600 hover:bg-red-200/50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-red-800/50 dark:hover:text-gray-200 transition-colors",
+                    title: "Minimize"
+                  },
+                  /* @__PURE__ */ React.createElement(MinimizeIcon, null)
+                ))),
+                /* @__PURE__ */ React.createElement("div", { className: "p-4" }, /* @__PURE__ */ React.createElement("div", { className: "mb-3" }, /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-700 dark:text-gray-300" }, "You can copy the error details and ask Gemini to fix the error.")), /* @__PURE__ */ React.createElement(
+                  "div",
+                  {
+                    className: `overflow-auto rounded bg-gray-50 p-3 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 scrollbar-none ${isFullWidth ? "max-h-[40vh]" : "max-h-60"}`
+                  },
+                  /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "space-y-1" }, /* @__PURE__ */ React.createElement("h4", { className: "text-xs uppercase font-semibold text-gray-500 dark:text-gray-400" }, "Error Message:"), /* @__PURE__ */ React.createElement("p", { className: "font-mono text-xs text-red-700 dark:text-red-400 break-words px-2 py-1.5 bg-red-50 dark:bg-red-900/30 rounded border border-red-100 dark:border-red-900/50" }, error ? error.toString() : "No error message available.")), errorInfo && /* @__PURE__ */ React.createElement("div", { className: "space-y-1" }, /* @__PURE__ */ React.createElement("h4", { className: "text-xs uppercase font-semibold text-gray-500 dark:text-gray-400" }, "Component Stack:"), /* @__PURE__ */ React.createElement("pre", { className: "whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 px-2 py-1.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700" }, errorInfo.componentStack)))
+                ), /* @__PURE__ */ React.createElement("div", { className: "mt-4" }, /* @__PURE__ */ React.createElement(
+                  "button",
+                  {
+                    onClick: this.copyErrorToClipboard,
+                    className: `flex items-center justify-center gap-2 px-4 py-2 text-white rounded-md transition-colors w-full ${this.state.copyButtonState === "copied" ? "bg-blue-600 hover:bg-blue-700" : "bg-indigo-600 hover:bg-indigo-700"}`
+                  },
+                  this.state.copyButtonState === "copied" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CheckIcon, null), "Copied to Clipboard!") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CopyIcon, null), "Copy Error Details")
+                )))
+              )));
+            }
+            return this.props.children;
+          }
+        };
+      }
+      module.exports = { createErrorBoundary };
+    }
+  });
+  return require_stdin();
+})();
+/*! Bundled license information:
+
+react/cjs/react.development.js:
+  (**
+   * @license React
+   * react.development.js
+   *
+   * Copyright (c) Meta Platforms, Inc. and affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+*/
+
+
+                // Use the exported createErrorBoundary function
+                const ErrorBoundary = ErrorBoundaryModule.createErrorBoundary();
+
+                const AppComponent = React.createElement(
+                    ErrorBoundary,
+                    null,
+                    React.createElement(App.default, null)
+                );
+                root.render(AppComponent);
+            });
+        </script>
     </body>
 </html>
